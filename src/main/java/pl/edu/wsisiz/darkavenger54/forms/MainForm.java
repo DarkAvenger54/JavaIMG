@@ -4,8 +4,8 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yevhenii Manuilov
@@ -13,10 +13,11 @@ import java.util.List;
 
 public class MainForm extends JFrame
 {
-    private List<ImageForm> imageForms;
+    private Map<Integer, ImageForm> imageForms;
+    private int imageIdCounter = 0;
     public MainForm()
     {
-        imageForms = new ArrayList<>();
+        imageForms = new HashMap<>();
         setTitle("JavaIMG");
 
         try {
@@ -78,7 +79,7 @@ public class MainForm extends JFrame
                 System.out.println("Error loading image");
             } else {
                 System.out.println("Image loaded: " + image.size());
-                imageForms.add(new ImageForm(imagePath, image, this));
+                createNewImageForm(imagePath, image);
             }
         }
     }
@@ -105,17 +106,53 @@ public class MainForm extends JFrame
                 System.out.println("Error loading image");
             } else {
                 System.out.println("Image loaded: " + image.size());
-                imageForms.add(new ImageForm(imagePath, image, this));
+                createNewImageForm(imagePath, image);
             }
         }
     }
     private void showInformation()
     {
-        JOptionPane.showMessageDialog(this, "Lab Exercises Summary Application\nMade by Yevhenii Manuilov\nPresenter: Dr. Eng. Łukasz Roszkowiak\n" +
+        JOptionPane.showMessageDialog(this, "JavaIMG\nMade by Yevhenii Manuilov\nPresenter: Dr. Eng. Łukasz Roszkowiak\n" +
                 "Image Processing Algorithms 2025\nWIT ID: 21679");
     }
     public void duplicateImageForm(ImageForm imageForm)
     {
-        imageForms.add(new ImageForm(imageForm.getImagePath()+"(1)", imageForm.getImageMat(), this));
+        ++imageIdCounter;
+        imageForms.put(imageIdCounter, new ImageForm(imageForm.getImagePath()+"(1)", imageForm.getImageMat(), this, imageIdCounter));
+    }
+    public void addImageForm(ImageForm imageForm)
+    {
+        ++imageIdCounter;
+        imageForms.put(imageIdCounter, imageForm);
+    }
+    public void createNewImageForm(String imagePath, Mat mat)
+    {
+        ++imageIdCounter;
+        imageForms.put(imageIdCounter, new ImageForm(imagePath, mat, this, imageIdCounter));
+    }
+
+    public Map<Integer, ImageForm> getImageForms()
+    {
+        return imageForms;
+    }
+    public ImageForm getImageFormByKey(Integer key)
+    {
+        return imageForms.get(key);
+    }
+    public void removeImageFormByKey(Integer key)
+    {
+        imageForms.remove(key);
+    }
+    public ImageForm duplicateImageFormAndReturn(ImageForm originalForm) {
+        ++imageIdCounter;
+        Mat clonedMat = originalForm.getImageMat().clone();
+        ImageForm duplicated = new ImageForm(
+                originalForm.getImagePath() + " (copy)",
+                clonedMat,
+                this,
+                imageIdCounter
+        );
+        imageForms.put(imageIdCounter, duplicated);
+        return duplicated;
     }
 }

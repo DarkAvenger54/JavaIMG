@@ -4,11 +4,12 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq t {space :::p, par t {seq t {comp scrollPane1::::378:x, space :::p}, seq t {comp typeLabel:::p::p, space ::224:x, comp sizeLabel:::p::p, space :::p, comp decreaseButton:::p:47:p, space :::p, comp increaseButton:::p:47:p, space :p:9:p}}}}"
-			"$verticalGroup": "par l {seq l {space :::p, comp scrollPane1::::218:x, space :::p, par b {comp typeLabel::b:p::p, comp increaseButton::b:p::p, comp decreaseButton::b:p::p, comp sizeLabel::b:p::p}, space :p:4:p}}"
+			"$horizontalGroup": "par l {seq t {space :::p, par t {seq t {comp scrollPane1::::433:x, space :::p}, seq t {comp typeLabel:::p::p, space ::279:x, comp sizeLabel:::p::p, space :::p, comp decreaseButton:::p:47:p, space :::p, comp increaseButton:::p:47:p, space :p:9:p}}}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp scrollPane1::::258:x, space :::p, par b {comp typeLabel::b:p::p, comp increaseButton::b:p::p, comp decreaseButton::b:p::p, comp sizeLabel::b:p::p}, space :p:4:p}}"
 		} ) {
 			name: "this"
 			"defaultCloseOperation": 2
+			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosed", "thisWindowClosed", true ) )
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "scrollPane1"
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -76,6 +77,41 @@ new FormModel {
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "histogram", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "rgbToHsvMenuItem"
+						"text": "rgbToHsv"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "rgbToHsv", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "rgbToLabMenuItem"
+						"text": "rgbToLab"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "rgbToLab", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "rgbToRgbMenuItem"
+						"text": "rgbToRgb"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "rgbToRgb", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "StrechMenuItem"
+						"text": "strech"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "stretch", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "equalizeMenuItem"
+						"text": "equalize"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "equalize", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "negationMenuItem"
+						"text": "negation"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "negation", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "StertchInRangeMenuItem"
+						"text": "StretchInRange"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "StertchInRange", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
 						name: "testMenuItem"
 						"text": "test"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "testMenuItem", true ) )
@@ -84,19 +120,167 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "menu3"
 					"text": "Lab2"
+					add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+						name: "arithmeticMenu"
+						"text": "arithmetic"
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "addMenuItem"
+							"text": "add"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "add", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "substractMenuItem"
+							"text": "substract"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "substract", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "blendMenuItem"
+							"text": "blend"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "blend", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "andMenuItem"
+							"text": "and"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "and", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "orMenuItem"
+							"text": "or"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "or", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "xorMenuItem"
+							"text": "xor"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "xor", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "notMenuItem"
+							"text": "not"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "not", true ) )
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "posterizeMenuItem"
+						"text": "posterize"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "posterize", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "blurMenuItem"
+						"text": "blur"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "blur", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "gaussianBlurMenuItem"
+						"text": "gaussianBlur"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "gaussianBlur", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "sobelMenuItem"
+						"text": "sobel"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sobel", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "laplacianMenuItem"
+						"text": "laplacian"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "laplacian", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "cannyMenuItem"
+						"text": "canny"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "canny", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "prewittMenuItem"
+						"text": "prewitt"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "prewitt", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "laplacianSharpenMenuItem"
+						"text": "laplacianSharpen"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "laplacianSharpen", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "conloveMenuItem"
+						"text": "convolve"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "conlove", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "medianMenuItem"
+						"text": "median"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "median", true ) )
+					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "menu4"
 					"text": "Lab3"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "erosionMenuItem"
+						"text": "Erosion"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "erosion", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "dilationMenuItem"
+						"text": "Dilation"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "dilation", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "openingMenuItem"
+						"text": "Opening"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "opening", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "closingMenuItem"
+						"text": "Closing"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "closing", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "skeletonizationMenuItem"
+						"text": "Skeletonization"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "skeletonization", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "profileLineMenuItem"
+						"text": "Profile Line"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "profileLine", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "houghMenuItem"
+						"text": "Hough"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "hough", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "piramidMenuItem"
+						"text": "Image Piramid"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "piramid", true ) )
+					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "menu5"
 					"text": "Lab4"
+					add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+						name: "menu6"
+						"text": "Segmentation"
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "manualThresholdMenuItem"
+							"text": "Manual Threshold"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "manualThreshold", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "adaptiveThresholdMenuItem"
+							"text": "Adaptive Threshold"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "adaptiveThreshold", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "otsuThresholdMenuItem"
+							"text": "Otsu Threshold"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "otsuThreshold", true ) )
+						} )
+					} )
 				} )
 			}
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 315 )
+			"size": new java.awt.Dimension( 455, 355 )
 		} )
 	}
 }

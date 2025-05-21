@@ -1,0 +1,28 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.6" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :::p, comp label1:::p::p, space u:::p, par l {comp calculateButton:::p::p, comp posterizeTextField::l:p:77:p}, space ::51:x}}"
+			"$verticalGroup": "par l {seq l {space ::50:x, par b {comp label1::b:p::p, comp posterizeTextField::b:p::p}, space s:::p, comp calculateButton:::p::p, space :p:23:p}}"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "posterizeTextField"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "calculateButton"
+				"text": "Calculate"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "calculate", true ) )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "levels"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 175, 165 )
+		} )
+	}
+}

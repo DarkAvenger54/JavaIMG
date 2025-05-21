@@ -1,0 +1,49 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.6" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {par l {seq {space :::p, par l:::p {comp p1Label:::::x, comp p2Label:::::x}, space :::p, par l:::p {comp p2TextField::::49:x, comp p1TextField::::49:x}, space :::p, par l:::p {comp q3Label:::::x, comp q4Label:::::x}, space :::p, par l {comp q4TextField:::p:48:p, comp q3TextField::l:p:48:p}}, seq l {space :p:44:p, comp calculateButton:::p::p}}, space ::25:x}}"
+			"$verticalGroup": "par l {seq l {space :p:18:p, par b {comp p1Label::b:p::p, comp p1TextField::b:p::p, comp q3Label::b:p::p, comp q3TextField::b:p::p}, space s:::p, par b {comp p2Label::b:p::p, comp p2TextField::b:p::p, comp q4Label::b:p::p, comp q4TextField::b:p::p}, space :::p, comp calculateButton:::p::p, space :::x}}"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "p1Label"
+				"text": "p1"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "p1TextField"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "p2Label"
+				"text": "p2"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "p2TextField"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "q3Label"
+				"text": "q3"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "q4Label"
+				"text": "q4"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "q3TextField"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "q4TextField"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "calculateButton"
+				"text": "Calculate"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "calculate", true ) )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 15, 0 )
+			"size": new java.awt.Dimension( 170, 140 )
+		} )
+	}
+}
