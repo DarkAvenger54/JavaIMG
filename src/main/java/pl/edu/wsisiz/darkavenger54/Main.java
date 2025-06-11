@@ -4,7 +4,6 @@ import org.opencv.core.Core;
 import pl.edu.wsisiz.darkavenger54.forms.MainForm;
 
 import java.io.*;
-import java.nio.file.Paths;
 
 /**
  * @author Yevhenii Manuilov

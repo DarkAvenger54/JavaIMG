@@ -776,5 +776,74 @@ public class MatAlgorithms
 
         return result;
     }
+    public static Mat convexHull(Mat binary) {
+        // Находим контуры
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(binary, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // Создаём пустое изображение (чёрный фон)
+        Mat result = Mat.zeros(binary.size(), CvType.CV_8UC1);
+
+        for (MatOfPoint contour : contours) {
+            MatOfInt hull = new MatOfInt();
+            Imgproc.convexHull(contour, hull);
+
+            // Переводим индексы в реальные точки
+            Point[] contourArray = contour.toArray();
+            List<Point> hullPoints = new ArrayList<>();
+            for (int index : hull.toArray()) {
+                hullPoints.add(contourArray[index]);
+            }
+
+            // Рисуем выпуклую оболочку
+            MatOfPoint hullMat = new MatOfPoint();
+            hullMat.fromList(hullPoints);
+            List<MatOfPoint> hullList = new ArrayList<>();
+            hullList.add(hullMat);
+            Imgproc.drawContours(result, hullList, -1, new Scalar(255), -1);  // заливка оболочки
+        }
+        return result;
+    }
+    public static List<int[]> getProfileLine(Mat mat, Point p1, Point p2) {
+        if (mat.channels() != 1) {
+            throw new IllegalArgumentException("Image must be grayscale (CV_8UC1)");
+        }
+
+        List<int[]> profile = new ArrayList<>();
+
+        int x0 = (int) p1.x;
+        int y0 = (int) p1.y;
+        int x1 = (int) p2.x;
+        int y1 = (int) p2.y;
+
+        int dx = Math.abs(x1 - x0);
+        int dy = -Math.abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = dx + dy;
+
+        while (true) {
+            if (x0 >= 0 && y0 >= 0 && x0 < mat.cols() && y0 < mat.rows()) {
+                double[] pixel = mat.get(y0, x0); // OpenCV uses row (y), then col (x)
+                int luminocity = (int) pixel[0];
+                profile.add(new int[] { x0, y0, luminocity });
+            }
+
+            if (x0 == x1 && y0 == y1) break;
+
+            int e2 = 2 * err;
+            if (e2 >= dy) {
+                err += dy;
+                x0 += sx;
+            }
+            if (e2 <= dx) {
+                err += dx;
+                y0 += sy;
+            }
+        }
+
+        return profile;
+    }
 
 }

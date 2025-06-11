@@ -4,8 +4,8 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq t {space :::p, par t {seq t {comp scrollPane1::::433:x, space :::p}, seq t {comp typeLabel:::p::p, space ::279:x, comp sizeLabel:::p::p, space :::p, comp decreaseButton:::p:47:p, space :::p, comp increaseButton:::p:47:p, space :p:9:p}}}}"
-			"$verticalGroup": "par l {seq l {space :::p, comp scrollPane1::::258:x, space :::p, par b {comp typeLabel::b:p::p, comp increaseButton::b:p::p, comp decreaseButton::b:p::p, comp sizeLabel::b:p::p}, space :p:4:p}}"
+			"$horizontalGroup": "par l {seq t {space :::p, par t {seq t {comp scrollPane1::::441:x, space :::p}, seq t {comp typeLabel:::p::p, space ::244:x, comp size1Label:::p::p, space s:::p, comp sizeLabel:::p::p, space :::p, comp decreaseButton:::p:47:p, space :::p, comp increaseButton:::p:47:p, space :p:9:p}}}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp scrollPane1::::263:x, space :::p, par b {comp typeLabel::b:p::p, comp increaseButton::b:p::p, comp decreaseButton::b:p::p, comp sizeLabel::b:p::p, comp size1Label::b:p::p}, space :p:4:p}}"
 		} ) {
 			name: "this"
 			"defaultCloseOperation": 2
@@ -35,6 +35,10 @@ new FormModel {
 				name: "sizeLabel"
 				"text": "100%"
 			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "size1Label"
+				"text": "Size"
+			} )
 			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
 				name: "menuBar1"
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
@@ -54,8 +58,9 @@ new FormModel {
 						name: "separator1"
 					} )
 					add( new FormComponent( "javax.swing.JMenuItem" ) {
-						name: "menuItem2"
+						name: "exitMenuItem"
 						"text": "Exit"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exit", true ) )
 					} )
 				} )
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
@@ -275,6 +280,15 @@ new FormModel {
 							"text": "Otsu Threshold"
 							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "otsuThreshold", true ) )
 						} )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "menu7"
+					"text": "Project"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "convexHullMenuItem"
+						"text": "Convex Hull"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "convexHull", true ) )
 					} )
 				} )
 			}

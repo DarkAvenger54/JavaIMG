@@ -9,10 +9,50 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {space :0:374:x}"
-					"$verticalGroup": "par l {space :0:210:x}"
+					"$horizontalGroup": "par l {seq l {space :::p, par t:::p {comp panel1:::::x, comp panel2:::::x}, space ::178:x}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp panel1:::p::p, space :::p, comp panel2:::p::p, space ::3:x}}"
 				} ) {
 					name: "contentPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, par l:::p {seq {comp label2:::p::p, space :::p, comp y1TextField:::::x}, seq {comp label1:::p::p, space :::p, comp x1TextField:::p:100:p}}, space ::16:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp x1TextField::b:p::p}, space s:::p, par b {comp label2::b:p::p, comp y1TextField::b:p::p}, space ::16:x}}"
+					} ) {
+						name: "panel1"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label1"
+							"text": "X1"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label2"
+							"text": "Y1"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "x1TextField"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "y1TextField"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l:::p {seq l {comp label3:::p::p, space :::p, comp x2TextField:::p:100:p}, seq l {comp label4:::p::p, space :::p, comp y2TextField:::::x}}, space ::18:x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp label3::b:p::p, comp x2TextField::b:p::p}, space s:::p, par b {comp label4::b:p::p, comp y2TextField::b:p::p}, space ::21:x}}"
+					} ) {
+						name: "panel2"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "X2"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "Y2"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "x2TextField"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "y2TextField"
+						} )
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )
@@ -27,6 +67,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "okButton"
 						"text": "OK"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "ok", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 						"gridx": 1
 						"gridy": 0
@@ -34,6 +75,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "cancelButton"
 						"text": "Cancel"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancel", true ) )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 						"gridx": 2
 						"gridy": 0
@@ -42,11 +84,11 @@ new FormModel {
 					"value": "South"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "Center"
+				"value": "East"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 585, 350 )
+			"size": new java.awt.Dimension( 350, 280 )
 		} )
 	}
 }

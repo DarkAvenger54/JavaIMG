@@ -2,9 +2,7 @@ package pl.edu.wsisiz.darkavenger54.forms;
 
 import java.awt.event.*;
 
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import pl.edu.wsisiz.darkavenger54.MatAlgorithms;
@@ -38,7 +36,7 @@ public class ImageForm extends JFrame
     private HistogramForm histogramForm;
     private final MainForm mainForm;
     private final int id;
-
+    private ProfileLineForm profileLineForm;
 
     public ImageForm(String imagePath, Mat mat, MainForm mainForm, int id)
     {
@@ -62,6 +60,7 @@ public class ImageForm extends JFrame
         setLocationRelativeTo(null);
         setTitle("JavaIMG " + imagePath);
         sizeLabel.setText(scalePercent + "%");
+        size1Label.setText(imageCurrentVersion.size().toString());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -83,16 +82,24 @@ public class ImageForm extends JFrame
             return EnImageType.RGB;
         }
     }
-    private EnBinaryType getMatBinaryType(Mat mat)
-    {
-        if(mat.type() == CvType.CV_8UC1)
-        {
-            return  EnBinaryType.BINARY;
-        }
-        else
-        {
+    private EnBinaryType getMatBinaryType(Mat mat) {
+        if (mat.type() != CvType.CV_8UC1) {
             return EnBinaryType.NON_BINARY;
         }
+
+        Core.MinMaxLocResult mmr = Core.minMaxLoc(mat);
+        double minVal = mmr.minVal;
+        double maxVal = mmr.maxVal;
+
+        if (minVal == 0.0 && maxVal == 255.0) {
+            // Проверка, есть ли значения кроме 0 и 255
+            Mat temp = new Mat();
+            Core.inRange(mat, new Scalar(1), new Scalar(254), temp);
+            if (Core.countNonZero(temp) == 0) {
+                return EnBinaryType.BINARY;
+            }
+        }
+        return EnBinaryType.NON_BINARY;
     }
     private void updateImage(Mat mat)
     {
@@ -637,6 +644,10 @@ public class ImageForm extends JFrame
 
     private void thisWindowClosed(WindowEvent e) {
         mainForm.removeImageFormByKey(id);
+        if(profileLineForm != null)
+        {
+            profileLineForm.dispose();
+        }
     }
 
     private void erosion(ActionEvent e) {
@@ -782,7 +793,21 @@ public class ImageForm extends JFrame
     }
 
     private void profileLine(ActionEvent e) {
-        ///TO-DO
+        if(imageType == EnImageType.GRAYSCALE)
+        {
+            ProfileLineDialog profileLineDialog = new ProfileLineDialog(this);
+            if(profileLineDialog.isConfirmed())
+            {
+                Point p1 = new Point(profileLineDialog.getX1(), profileLineDialog.getY1());
+                Point p2 = new Point(profileLineDialog.getX2(), profileLineDialog.getY2());
+                profileLineForm = new ProfileLineForm(imageCurrentVersion, p1, p2);
+            }
+            profileLineDialog.dispose();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void hough(ActionEvent e) {
@@ -817,13 +842,38 @@ public class ImageForm extends JFrame
         this.scalePercent = scalePercent;
     }
 
+    private void exit(ActionEvent e) {
+        mainForm.removeImageFormByKey(id);
+        if(profileLineForm != null)
+        {
+            profileLineForm.dispose();
+        }
+        this.dispose();
+    }
+
+    private void convexHull(ActionEvent e) {
+        if (binaryType == EnBinaryType.BINARY)
+        {
+            imageCurrentVersion = MatAlgorithms.convexHull(imageCurrentVersion);
+            updateImage(imageCurrentVersion);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Image isn't Binary", "Error" , JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    public Mat getMat()
+    {
+        return imageCurrentVersion;
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         menuBar1 = new JMenuBar();
         menu1 = new JMenu();
         saveAsMenuItem = new JMenuItem();
         duplicateMenuItem = new JMenuItem();
-        menuItem2 = new JMenuItem();
+        exitMenuItem = new JMenuItem();
         menu2 = new JMenu();
         rgbToGrayMenuItem = new JMenuItem();
         grayToRgbMenuItem = new JMenuItem();
@@ -869,12 +919,15 @@ public class ImageForm extends JFrame
         manualThresholdMenuItem = new JMenuItem();
         adaptiveThresholdMenuItem = new JMenuItem();
         otsuThresholdMenuItem = new JMenuItem();
+        menu7 = new JMenu();
+        convexHullMenuItem = new JMenuItem();
         scrollPane1 = new JScrollPane();
         imageLabel = new JLabel();
         typeLabel = new JLabel();
         decreaseButton = new JButton();
         increaseButton = new JButton();
         sizeLabel = new JLabel();
+        size1Label = new JLabel();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -904,9 +957,10 @@ public class ImageForm extends JFrame
                 menu1.add(duplicateMenuItem);
                 menu1.addSeparator();
 
-                //---- menuItem2 ----
-                menuItem2.setText("Exit");
-                menu1.add(menuItem2);
+                //---- exitMenuItem ----
+                exitMenuItem.setText("Exit");
+                exitMenuItem.addActionListener(e -> exit(e));
+                menu1.add(exitMenuItem);
             }
             menuBar1.add(menu1);
 
@@ -1140,6 +1194,17 @@ public class ImageForm extends JFrame
                 menu5.add(menu6);
             }
             menuBar1.add(menu5);
+
+            //======== menu7 ========
+            {
+                menu7.setText("Project");
+
+                //---- convexHullMenuItem ----
+                convexHullMenuItem.setText("Convex Hull");
+                convexHullMenuItem.addActionListener(e -> convexHull(e));
+                menu7.add(convexHullMenuItem);
+            }
+            menuBar1.add(menu7);
         }
         setJMenuBar(menuBar1);
 
@@ -1165,6 +1230,9 @@ public class ImageForm extends JFrame
         //---- sizeLabel ----
         sizeLabel.setText("100%");
 
+        //---- size1Label ----
+        size1Label.setText("Size");
+
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
@@ -1173,11 +1241,13 @@ public class ImageForm extends JFrame
                     .addContainerGap()
                     .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                         .addGroup(contentPaneLayout.createSequentialGroup()
-                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                            .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
                             .addContainerGap())
                         .addGroup(contentPaneLayout.createSequentialGroup()
                             .addComponent(typeLabel)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 244, Short.MAX_VALUE)
+                            .addComponent(size1Label)
+                            .addGap(18, 18, 18)
                             .addComponent(sizeLabel)
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(decreaseButton, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
@@ -1189,13 +1259,14 @@ public class ImageForm extends JFrame
             contentPaneLayout.createParallelGroup()
                 .addGroup(contentPaneLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+                    .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(typeLabel)
                         .addComponent(increaseButton)
                         .addComponent(decreaseButton)
-                        .addComponent(sizeLabel))
+                        .addComponent(sizeLabel)
+                        .addComponent(size1Label))
                     .addGap(4, 4, 4))
         );
         pack();
@@ -1208,7 +1279,7 @@ public class ImageForm extends JFrame
     private JMenu menu1;
     private JMenuItem saveAsMenuItem;
     private JMenuItem duplicateMenuItem;
-    private JMenuItem menuItem2;
+    private JMenuItem exitMenuItem;
     private JMenu menu2;
     private JMenuItem rgbToGrayMenuItem;
     private JMenuItem grayToRgbMenuItem;
@@ -1254,11 +1325,14 @@ public class ImageForm extends JFrame
     private JMenuItem manualThresholdMenuItem;
     private JMenuItem adaptiveThresholdMenuItem;
     private JMenuItem otsuThresholdMenuItem;
+    private JMenu menu7;
+    private JMenuItem convexHullMenuItem;
     private JScrollPane scrollPane1;
     private JLabel imageLabel;
     private JLabel typeLabel;
     private JButton decreaseButton;
     private JButton increaseButton;
     private JLabel sizeLabel;
+    private JLabel size1Label;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }
