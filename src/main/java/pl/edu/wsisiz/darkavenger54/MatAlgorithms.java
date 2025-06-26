@@ -9,11 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Klasa zawiera zestaw metod do przetwarzania obrazów Mat przy użyciu OpenCV.
+ * Obejmuje operacje filtrowania, progowania, morfologii, konwersji kolorów
+ * i inne operacje typowe dla cyfrowego przetwarzania obrazów.
+ * <p>
  * @author Yevhenii Manuilov
  */
 
 public class MatAlgorithms
 {
+
+    /**
+     * Konwertuje obraz Mat (OpenCV) na obiekt BufferedImage.
+     * Obsługuje zarówno obrazy 1-kanałowe (skala szarości), jak i 3-kanałowe (RGB).
+     *
+     * @param mat obraz Mat
+     * @return obraz w formacie BufferedImage
+     */
     public static BufferedImage matToBufferedImage(Mat mat) {
         Mat converted = new Mat();
         if (mat.channels() == 3) {
@@ -29,6 +41,12 @@ public class MatAlgorithms
         image.getRaster().setDataElements(0, 0, converted.cols(), converted.rows(), b);
         return image;
     }
+    /**
+     * Konwertuje obraz RGB na obraz w skali szarości.
+     *
+     * @param currentImage wejściowy obraz Mat
+     * @return obraz w skali szarości
+     */
     public static Mat rgbToGray(Mat currentImage)
     {
         if (currentImage.channels() == 3 || currentImage.channels() == 4) {
@@ -39,6 +57,12 @@ public class MatAlgorithms
             return currentImage;
         }
     }
+    /**
+     * Konwertuje obraz w skali szarości na RGB.
+     *
+     * @param currentImage wejściowy obraz Mat
+     * @return obraz RGB
+     */
     public static Mat grayToRgb(Mat currentImage)
     {
         if (currentImage.channels() == 1)
@@ -52,7 +76,12 @@ public class MatAlgorithms
             return currentImage;
         }
     }
-
+    /**
+     * Oblicza histogram intensywności pikseli dla obrazu w skali szarości.
+     *
+     * @param grayImage obraz wejściowy
+     * @return tablica rozmiaru 256 zliczająca liczbę pikseli
+     */
     public static int[] calculateGrayscaleHistogram(Mat grayImage)
     {
         Mat hist = new Mat();
@@ -70,14 +99,24 @@ public class MatAlgorithms
         }
         return histogram;
     }
-
+    /**
+     * Rozdziela obraz RGB na poszczególne kanały (R, G, B).
+     *
+     * @param rgbImage wejściowy obraz RGB
+     * @return lista kanałów
+     */
     public static List<Mat> convertRGBtoGrayChannels(Mat rgbImage)
     {
         List<Mat> channels = new ArrayList<>();
         Core.split(rgbImage, channels);
         return channels;
     }
-
+    /**
+     * Konwertuje obraz RGB na przestrzeń HSV i rozdziela na kanały.
+     *
+     * @param rgbImage wejściowy obraz RGB
+     * @return lista kanałów HSV
+     */
     public static List<Mat> convertRGBtoHSVChannels(Mat rgbImage)
     {
         Mat hsvImage = new Mat();
@@ -86,6 +125,12 @@ public class MatAlgorithms
         Core.split(hsvImage, hsvChannels);
         return hsvChannels;
     }
+    /**
+     * Konwertuje obraz RGB na przestrzeń Lab i rozdziela na kanały.
+     *
+     * @param rgbImage wejściowy obraz RGB
+     * @return lista kanałów Lab
+     */
     public static List<Mat> convertRGBtoLabChannels(Mat rgbImage)
     {
         Mat labImage = new Mat();
@@ -94,7 +139,12 @@ public class MatAlgorithms
         Core.split(labImage, labChannels);
         return labChannels;
     }
-
+    /**
+     * Wykonuje rozciąganie histogramu (normalizację) obrazu.
+     *
+     * @param input obraz wejściowy
+     * @return obraz po rozciągnięciu histogramu
+     */
     public static Mat histogramStretch(Mat input) {
         Mat result = input.clone();
 
@@ -102,7 +152,7 @@ public class MatAlgorithms
             int min = 255;
             int max = 0;
 
-            // Находим min и max для текущего канала
+            // Szukanie minimalnej i maksymalnej wartości
             for (int y = 0; y < input.rows(); y++) {
                 for (int x = 0; x < input.cols(); x++) {
                     double[] pixel = input.get(y, x);
@@ -112,7 +162,7 @@ public class MatAlgorithms
                 }
             }
 
-            // Применяем растяжение
+            // Przekształcenie piksela do nowego przedziału
             for (int y = 0; y < input.rows(); y++) {
                 for (int x = 0; x < input.cols(); x++) {
                     double[] pixel = result.get(y, x);
@@ -123,7 +173,12 @@ public class MatAlgorithms
         }
         return result;
     }
-
+    /**
+     * Wykonuje wyrównanie histogramu na obrazie.
+     *
+     * @param input obraz wejściowy
+     * @return obraz po wyrównaniu histogramu
+     */
     public static Mat histogramEqualization(Mat input) {
         Mat result = input.clone();
 
@@ -131,7 +186,7 @@ public class MatAlgorithms
             int[] hist = new int[256];
             int totalPixels = input.rows() * input.cols();
 
-            // Вычисление гистограммы
+            // Tworzenie histogramu
             for (int y = 0; y < input.rows(); y++) {
                 for (int x = 0; x < input.cols(); x++) {
                     double[] pixel = input.get(y, x);
@@ -139,21 +194,20 @@ public class MatAlgorithms
                 }
             }
 
-            // Вычисление CDF
+            // Tworzenie dystrybuanty (CDF) i normalizacja
             int[] cdf = new int[256];
             cdf[0] = hist[0];
             for (int i = 1; i < 256; i++) {
                 cdf[i] = cdf[i - 1] + hist[i];
             }
 
-            // Нормализация CDF
             double[] cdfNorm = new double[256];
             for (int i = 0; i < 256; i++) {
                 cdfNorm[i] = (cdf[i] - cdf[0]) * 255.0 / (totalPixels - cdf[0]);
                 if (cdfNorm[i] < 0) cdfNorm[i] = 0;
             }
 
-            // Применяем equalizację
+            // Przekształcenie pikseli
             for (int y = 0; y < input.rows(); y++) {
                 for (int x = 0; x < input.cols(); x++) {
                     double[] pixel = result.get(y, x);
@@ -164,6 +218,12 @@ public class MatAlgorithms
         }
         return result;
     }
+    /**
+     * Wykonuje negację obrazu (odwrócenie wartości intensywności).
+     *
+     * @param input obraz wejściowy
+     * @return obraz po negacji
+     */
     public static Mat negation(Mat input) {
         Mat result = new Mat(input.rows(), input.cols(), input.type());
         for (int y = 0; y < input.rows(); y++) {
@@ -177,7 +237,17 @@ public class MatAlgorithms
         }
         return result;
     }
-
+    /**
+     * Wykonuje rozciąganie intensywności pikseli poprzez ustawienie nowego
+     * przedziału wartości (p1, p2) na (q3, q4).
+     *
+     * @param input obraz wejściowy
+     * @param p1 minimalny próg wejściowy
+     * @param p2 maksymalny próg wejściowy
+     * @param q3 minimalny próg wyjściowy
+     * @param q4 maksymalny próg wyjściowy
+     * @return obraz po rozciągnięciu intensywności
+     */
     public static Mat stretch1(Mat input, int p1, int p2, int q3, int q4)
     {
         Mat result = new Mat(input.rows(), input.cols(), input.type());
@@ -201,10 +271,16 @@ public class MatAlgorithms
         }
         return result;
     }
+    /**
+     * Redukuje liczbę intensywności (poziomów) poprzez posterizację obrazu.
+     *
+     * @param src wejściowy obraz
+     * @param levels liczba poziomów intensywności
+     * @return obraz po posterizacji
+     */
     public static Mat posterize(Mat src, int levels) {
         Mat result = new Mat(src.rows(), src.cols(), src.type());
 
-        // Расчёт размера одного уровня
         int levelSize = 256 / levels;
 
         for (int row = 0; row < src.rows(); row++) {
@@ -212,10 +288,8 @@ public class MatAlgorithms
                 double[] pixel = src.get(row, col);
                 int gray = (int) pixel[0];
 
-                // Определяем ближайший уровень
                 int posterizedGray = (gray / levelSize) * levelSize;
 
-                // Обеспечиваем границу не выше 255
                 if (posterizedGray > 255) posterizedGray = 255;
 
                 result.put(row, col, posterizedGray);
@@ -224,12 +298,30 @@ public class MatAlgorithms
 
         return result;
     }
+
+    /**
+     * Wykonuje rozmycie obrazu poprzez filtrację uśredniającą.
+     *
+     * @param src obraz wejściowy
+     * @param ksize rozmiar jądra rozmywania
+     * @return rozmyty obraz
+     */
     public static Mat blur(Mat src, int ksize) {
         Mat dst = new Mat();
         Size kernelSize = new Size(ksize, ksize);
         Imgproc.blur(src, dst, kernelSize);
         return dst;
     }
+    /**
+     * Wykonuje rozmycie gaussowskie obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param ksize rozmiar jądra
+     * @param sigmaX odchylenie standardowe w kierunku X
+     * @param sigmaY odchylenie standardowe w kierunku Y
+     * @param paddingType typ wypełniania krawędzi
+     * @return rozmyty obraz
+     */
     public static Mat gaussianBlur(Mat input, int ksize, double sigmaX, double sigmaY, EnPaddingType paddingType) {
         int borderType;
         Size kernelSize = new Size(ksize, ksize);
@@ -251,8 +343,17 @@ public class MatAlgorithms
         Imgproc.GaussianBlur(input, output, kernelSize, sigmaX, sigmaY, borderType);
         return output;
     }
+
+    /**
+     * Wykonuje filtr Sobela, obliczając gradient obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param ksize rozmiar jądra
+     * @param paddingType typ wypełniania krawędzi
+     * @param depthType typ głębi obrazu
+     * @return obraz po filtracji Sobela
+     */
     public static Mat sobel(Mat input, int ksize, EnPaddingType paddingType, EnDepthType depthType) {
-        // Определение глубины
         int depth;
         switch (depthType) {
             case U8:
@@ -264,7 +365,6 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported depth type");
         }
-        // Определение типа границы
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -279,23 +379,28 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported padding type");
         }
-        // Вычисление градиентов
         Mat gradX = new Mat();
         Mat gradY = new Mat();
         Imgproc.Sobel(input, gradX, depth, 1, 0, ksize, 1, 0, borderType);
         Imgproc.Sobel(input, gradY, depth, 0, 1, ksize, 1, 0, borderType);
-        // Модули градиентов
         Mat absGradX = new Mat();
         Mat absGradY = new Mat();
         Core.convertScaleAbs(gradX, absGradX);
         Core.convertScaleAbs(gradY, absGradY);
-        // Комбинирование градиентов
         Mat sobelResult = new Mat();
         Core.addWeighted(absGradX, 0.5, absGradY, 0.5, 0, sobelResult);
         return sobelResult;
     }
+    /**
+     * Wykonuje filtrację Laplace'a na obrazie.
+     *
+     * @param input obraz wejściowy
+     * @param ksize rozmiar jądra
+     * @param paddingType typ wypełniania krawędzi
+     * @param depthType typ głębi obrazu
+     * @return obraz po filtracji Laplace'a
+     */
     public static Mat laplacian(Mat input,  int ksize, EnPaddingType paddingType, EnDepthType depthType) {
-        // Глубина
         int depth;
         switch (depthType) {
             case U8:
@@ -307,7 +412,6 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported depth type");
         }
-        // Тип границы
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -322,23 +426,36 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported padding type");
         }
-        // Применяем Лаплас
         Mat laplacian = new Mat();
         Imgproc.Laplacian(input, laplacian, depth, ksize, 1, 0, borderType);
-        // Приведение к 8-битному диапазону для отображения (если надо)
         Mat absLaplacian = new Mat();
         Core.convertScaleAbs(laplacian, absLaplacian);
         return absLaplacian;
     }
+    /**
+     * Wykonuje algorytm detekcji krawędzi Canny'ego.
+     *
+     * @param input obraz wejściowy
+     * @param threshold1 dolny próg
+     * @param threshold2 górny próg
+     * @return obraz z wykrytymi krawędziami
+     */
     public static Mat canny(Mat input, double threshold1, double threshold2) {
-        // Результат
         Mat edges = new Mat();
-        // Применение алгоритма Канни
         Imgproc.Canny(input, edges, threshold1, threshold2);
         return edges;
     }
+
+    /**
+     * Wykonuje filtrację Prewitt'a, aby wykryć krawędzie w wybranym kierunku.
+     *
+     * @param input obraz wejściowy
+     * @param direction kierunek detekcji
+     * @param depthType typ głębi
+     * @param paddingType typ wypełniania
+     * @return obraz z wynikiem filtracji
+     */
     public static Mat prewitt(Mat input, EnDirectionType direction, EnDepthType depthType, EnPaddingType paddingType) {
-        // Глубина
         int depth;
         switch (depthType) {
             case U8:
@@ -351,7 +468,6 @@ public class MatAlgorithms
                 throw new IllegalArgumentException("Unsupported depth type");
         }
 
-        // Тип границ
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -366,13 +482,9 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported padding type");
         }
-
-        // Получение ядра Превитта по направлению
         Mat kernel = getPrewittKernel(direction);
-        // Применение фильтра
         Mat result = new Mat();
         Imgproc.filter2D(input, result, depth, kernel, new Point(-1, -1), 0, borderType);
-        // Приведение к 8-битам, если нужно
         if (depth != CvType.CV_8U) {
             Mat absResult = new Mat();
             Core.convertScaleAbs(result, absResult);
@@ -381,9 +493,13 @@ public class MatAlgorithms
             return result;
         }
     }
-
+    /**
+     * Tworzy jądro Prewitt'a dla wybranego kierunku.
+     *
+     * @param direction kierunek
+     * @return macierz jądra Prewitt'a
+     */
     private static Mat getPrewittKernel(EnDirectionType direction) {
-        // Стандартные 3x3 ядра Превитта по направлениям
         switch (direction) {
             case NORTH:
                 return new MatOfFloat(
@@ -437,8 +553,17 @@ public class MatAlgorithms
                 throw new IllegalArgumentException("Unsupported direction");
         }
     }
+    /**
+     * Wykonuje wyostrzanie obrazu poprzez filtrację Laplace'a.
+     *
+     * @param input obraz wejściowy
+     * @param sharpenType typ wyostrzania (maska)
+     * @param depthType typ głębi obrazu
+     * @param paddingType typ wypełniania krawędzi
+     * @return wyostrzony obraz
+     */
+
     public static Mat laplacianSharpening(Mat input, EnSharpenType sharpenType, EnDepthType depthType, EnPaddingType paddingType) {
-        // Глубина
         int depth;
         switch (depthType) {
             case U8:
@@ -450,7 +575,6 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported depth type");
         }
-        // Тип границы
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -465,13 +589,9 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported padding type");
         }
-        // Выбор ядра маски
         Mat kernel = getSharpenKernel(sharpenType);
-        // Применение фильтра
         Mat filtered = new Mat();
         Imgproc.filter2D(input, filtered, depth, kernel, new Point(-1, -1), 0, borderType);
-
-        // Приведение к 8-битам при необходимости
         if (depth != CvType.CV_8U) {
             Mat absFiltered = new Mat();
             Core.convertScaleAbs(filtered, absFiltered);
@@ -480,6 +600,12 @@ public class MatAlgorithms
             return filtered;
         }
     }
+    /**
+     * Tworzy jądro wyostrzające według wybranego typu.
+     *
+     * @param sharpenType typ wyostrzania
+     * @return jądro wyostrzające
+     */
 
     private static Mat getSharpenKernel(EnSharpenType sharpenType) {
         switch (sharpenType) {
@@ -505,12 +631,19 @@ public class MatAlgorithms
                 throw new IllegalArgumentException("Unsupported sharpen type");
         }
     }
+    /**
+     * Wykonuje splot obrazu z wybraną maską 3x3.
+     *
+     * @param input obraz wejściowy
+     * @param maskValues lista wartości maski (9 elementów)
+     * @param depthType typ głębi obrazu
+     * @param paddingType typ wypełniania
+     * @return obraz po splocie
+     */
     public static Mat convolve(Mat input, List<Integer> maskValues, EnDepthType depthType, EnPaddingType paddingType) {
-        // Проверка размера
         if (maskValues == null || maskValues.size() != 9) {
             throw new IllegalArgumentException("Mask must contain exactly 9 values (3x3)");
         }
-        // Глубина
         int depth;
         switch (depthType) {
             case U8:
@@ -522,7 +655,6 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported depth type");
         }
-        // Границы
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -538,17 +670,14 @@ public class MatAlgorithms
                 throw new IllegalArgumentException("Unsupported padding type");
         }
 
-        // Создание ядра 3x3
         Mat kernel = new Mat(3, 3, CvType.CV_32F);
         for (int i = 0; i < 9; i++) {
             kernel.put(i / 3, i % 3, maskValues.get(i));
         }
 
-        // Применение фильтра
         Mat filtered = new Mat();
         Imgproc.filter2D(input, filtered, depth, kernel, new Point(-1, -1), 0, borderType);
 
-        // Приведение к 8-битному диапазону при необходимости
         if (depth != CvType.CV_8U) {
             Mat absFiltered = new Mat();
             Core.convertScaleAbs(filtered, absFiltered);
@@ -557,8 +686,15 @@ public class MatAlgorithms
             return filtered;
         }
     }
+    /**
+     * Wykonuje filtrowanie medianowe obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param ksize rozmiar jądra
+     * @param paddingType typ wypełniania
+     * @return obraz po filtracji medianowej
+     */
     public static Mat medianFilter(Mat input, int ksize, EnPaddingType paddingType) {
-        // Выбор типа границы
         int borderType;
         switch (paddingType) {
             case REPLICATE:
@@ -573,17 +709,21 @@ public class MatAlgorithms
             default:
                 throw new IllegalArgumentException("Unsupported padding type");
         }
-        // Расширение изображения
         int pad = ksize / 2;
         Mat padded = new Mat();
         Core.copyMakeBorder(input, padded, pad, pad, pad, pad, borderType);
-        // Применение медианного фильтра
         Mat blurred = new Mat();
         Imgproc.medianBlur(padded, blurred, ksize);
-        // Обрезаем результат до оригинального размера
         Rect roi = new Rect(pad, pad, input.cols(), input.rows());
         return new Mat(blurred, roi).clone();
     }
+    /**
+     * Wykonuje dodawanie dwóch obrazów o tych samych rozmiarach i typie.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @return obraz powstały po dodaniu
+     */
     public static Mat add(Mat a, Mat b) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for addition");
@@ -593,6 +733,13 @@ public class MatAlgorithms
         Core.add(a, b, result);
         return result;
     }
+    /**
+     * Wykonuje odejmowanie dwóch obrazów o tych samych rozmiarach i typie.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @return obraz powstały po odjęciu
+     */
     public static Mat subtract(Mat a, Mat b) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for subtraction");
@@ -602,6 +749,14 @@ public class MatAlgorithms
         Core.subtract(a, b, result);
         return result;
     }
+    /**
+     * Wykonuje mieszanie dwóch obrazów poprzez ważoną sumę.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @param alpha waga pierwszego obrazu (0-1), (1-alpha) daje wagę drugiego obrazu
+     * @return obraz po mieszaniu
+     */
     public static Mat blend(Mat a, Mat b, double alpha) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for blending");
@@ -614,6 +769,13 @@ public class MatAlgorithms
         Core.addWeighted(a, alpha, b, 1.0 - alpha, 0.0, result);
         return result;
     }
+    /**
+     * Wykonuje operację AND na dwóch obrazach o tych samych rozmiarach i typie.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @return obraz powstały po operacji AND
+     */
     public static Mat bitwiseAnd(Mat a, Mat b) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for bitwise AND");
@@ -623,6 +785,13 @@ public class MatAlgorithms
         Core.bitwise_and(a, b, result);
         return result;
     }
+    /**
+     * Wykonuje operację OR na dwóch obrazach o tych samych rozmiarach i typie.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @return obraz powstały po operacji OR
+     */
     public static Mat bitwiseOr(Mat a, Mat b) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for bitwise OR");
@@ -632,6 +801,14 @@ public class MatAlgorithms
         Core.bitwise_or(a, b, result);
         return result;
     }
+
+    /**
+     * Wykonuje operację XOR na dwóch obrazach o tych samych rozmiarach i typie.
+     *
+     * @param a pierwszy obraz
+     * @param b drugi obraz
+     * @return obraz powstały po operacji XOR
+     */
     public static Mat bitwiseXor(Mat a, Mat b) {
         if (!a.size().equals(b.size()) || a.type() != b.type()) {
             throw new IllegalArgumentException("Images must be the same size and type for bitwise XOR");
@@ -641,11 +818,24 @@ public class MatAlgorithms
         Core.bitwise_xor(a, b, result);
         return result;
     }
+    /**
+     * Wykonuje operację NOT na obrazie.
+     *
+     * @param a obraz wejściowy
+     * @return obraz po operacji NOT
+     */
     public static Mat bitwiseNot(Mat a) {
         Mat result = new Mat();
         Core.bitwise_not(a, result);
         return result;
     }
+    /**
+     * Tworzy element strukturalny dla operacji morfologicznych.
+     *
+     * @param type typ elementu (np. kwadratowy, romb)
+     * @param size rozmiar elementu (musi być liczbą nieparzystą ≥ 1)
+     * @return element strukturalny
+     */
     public static Mat createStructuringElement(EnStructureType type, int size) {
         if (size % 2 == 0 || size < 1)
             throw new IllegalArgumentException("Size must be an odd number ≥ 1");
@@ -666,6 +856,12 @@ public class MatAlgorithms
         }
         return kernel;
     }
+    /**
+     * Pomocnicza metoda do zamiany typu wypełniania na typ OpenCV.
+     *
+     * @param paddingType typ wypełniania
+     * @return typ wypełniania rozpoznawany przez OpenCV
+     */
     private static int toBorderType(EnPaddingType paddingType) {
         switch (paddingType) {
             case REPLICATE:
@@ -678,24 +874,60 @@ public class MatAlgorithms
                 throw new IllegalArgumentException("Unsupported padding type");
         }
     }
+    /**
+     * Wykonuje erozję obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param type typ elementu strukturalnego
+     * @param size rozmiar elementu
+     * @param paddingType typ wypełniania
+     * @return obraz po erozji
+     */
     public static Mat erode(Mat input, EnStructureType type, int size, EnPaddingType paddingType) {
         Mat kernel = createStructuringElement(type, size);
         Mat output = new Mat();
         Imgproc.erode(input, output, kernel, new Point(-1, -1), 1, toBorderType(paddingType), new Scalar(0));
         return output;
     }
+    /**
+     * Wykonuje dylatację obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param type typ elementu strukturalnego
+     * @param size rozmiar elementu
+     * @param paddingType typ wypełniania
+     * @return obraz po dylatacji
+     */
     public static Mat dilate(Mat input, EnStructureType type, int size, EnPaddingType paddingType) {
         Mat kernel = createStructuringElement(type, size);
         Mat output = new Mat();
         Imgproc.dilate(input, output, kernel, new Point(-1, -1), 1, toBorderType(paddingType), new Scalar(0));
         return output;
     }
+    /**
+     * Wykonuje operację otwarcia (erozja, a następnie dylatacja).
+     *
+     * @param input obraz wejściowy
+     * @param type typ elementu strukturalnego
+     * @param size rozmiar elementu
+     * @param paddingType typ wypełniania
+     * @return obraz po operacji otwarcia
+     */
     public static Mat open(Mat input, EnStructureType type, int size, EnPaddingType paddingType) {
         Mat kernel = createStructuringElement(type, size);
         Mat output = new Mat();
         Imgproc.morphologyEx(input, output, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1), 1, toBorderType(paddingType), new Scalar(0));
         return output;
     }
+    /**
+     * Wykonuje operację zamknięcia (dylatacja, a następnie erozja).
+     *
+     * @param input obraz wejściowy
+     * @param type typ elementu strukturalnego
+     * @param size rozmiar elementu
+     * @param paddingType typ wypełniania
+     * @return obraz po operacji zamknięcia
+     */
     public static Mat close(Mat input, EnStructureType type, int size, EnPaddingType paddingType) {
         Mat kernel = createStructuringElement(type, size);
         Mat output = new Mat();
@@ -703,20 +935,25 @@ public class MatAlgorithms
         return output;
     }
 
+    /**
+     * Wykonuje szkieletyzację obrazu binarnego.
+     *
+     * @param input obraz wejściowy (binarne CV_8UC1)
+     * @param structureType typ elementu strukturalnego
+     * @param size rozmiar elementu
+     * @param paddingType typ wypełniania
+     * @return obraz po szkieletyzacji
+     */
     public static Mat skeletonize(Mat input, EnStructureType structureType, int size, EnPaddingType paddingType) {
-        // Проверка входного изображения
         if (input.type() != CvType.CV_8UC1) {
             throw new IllegalArgumentException("Input must be a binary image (CV_8UC1)");
         }
-        // Получаем ядро
         Mat kernel = createStructuringElement(structureType, size);
         int borderType = toBorderType(paddingType);
-        // Подготовка
         Mat img = input.clone();
         Mat skel = Mat.zeros(img.size(), CvType.CV_8UC1);
         Mat temp = new Mat();
         Mat eroded = new Mat();
-        // Итерационный процесс
         boolean done;
         do {
             Imgproc.erode(img, eroded, kernel, new Point(-1, -1), 1, borderType, new Scalar(0));
@@ -728,29 +965,56 @@ public class MatAlgorithms
         } while (!done);
         return skel;
     }
+
+    /**
+     * Wykonuje progowanie manualne obrazu.
+     *
+     * @param input obraz wejściowy
+     * @param thresholdValue próg
+     * @return obraz po progowaniu
+     */
     public static Mat manualThreshold(Mat input, int thresholdValue) {
         Mat result = new Mat();
         Imgproc.threshold(input, result, thresholdValue, 255, Imgproc.THRESH_BINARY);
         return result;
     }
+
+    /**
+     * Wykonuje adaptacyjne progowanie obrazu.
+     *
+     * @param input obraz wejściowy
+     * @return obraz po adaptacyjnym progowaniu
+     */
     public static Mat adaptiveThreshold(Mat input) {
         Mat result = new Mat();
         Imgproc.adaptiveThreshold(
                 input,
                 result,
                 255,
-                Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, // или MEAN_C
+                Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
                 Imgproc.THRESH_BINARY,
-                11,  // blockSize (должен быть нечетный)
-                2    // значение C
+                11,
+                2
         );
         return result;
     }
+    /**
+     * Wykonuje progowanie Otsu.
+     *
+     * @param input obraz wejściowy
+     * @return obraz po progowaniu Otsu
+     */
     public static Mat otsuThreshold(Mat input) {
         Mat result = new Mat();
         Imgproc.threshold(input, result, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
         return result;
     }
+    /**
+     * Wykonuje transformację Hougha do detekcji linii.
+     *
+     * @param input obraz wejściowy
+     * @return obraz z wykrytymi liniami
+     */
     public static Mat hough(Mat input) {
         Mat edges = new Mat();
         Imgproc.Canny(input, edges, 50, 150);
@@ -776,27 +1040,29 @@ public class MatAlgorithms
 
         return result;
     }
+    /**
+     * Tworzy obraz z wyznaczoną otoczką wypukłą.
+     *
+     * @param binary obraz wejściowy (binarne CV_8UC1)
+     * @return obraz z wypełnioną otoczką wypukłą
+     */
     public static Mat convexHull(Mat binary) {
-        // Находим контуры
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(binary, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        // Создаём пустое изображение (чёрный фон)
         Mat result = Mat.zeros(binary.size(), CvType.CV_8UC1);
 
         for (MatOfPoint contour : contours) {
             MatOfInt hull = new MatOfInt();
             Imgproc.convexHull(contour, hull);
 
-            // Переводим индексы в реальные точки
             Point[] contourArray = contour.toArray();
             List<Point> hullPoints = new ArrayList<>();
             for (int index : hull.toArray()) {
                 hullPoints.add(contourArray[index]);
             }
 
-            // Рисуем выпуклую оболочку
             MatOfPoint hullMat = new MatOfPoint();
             hullMat.fromList(hullPoints);
             List<MatOfPoint> hullList = new ArrayList<>();
@@ -805,6 +1071,14 @@ public class MatAlgorithms
         }
         return result;
     }
+    /**
+     * Pobiera intensywność pikseli wzdłuż linii pomiędzy dwoma punktami.
+     *
+     * @param mat obraz wejściowy (skala szarości)
+     * @param p1 pierwszy punkt
+     * @param p2 drugi punkt
+     * @return lista tablic [x, y, intensywność]
+     */
     public static List<int[]> getProfileLine(Mat mat, Point p1, Point p2) {
         if (mat.channels() != 1) {
             throw new IllegalArgumentException("Image must be grayscale (CV_8UC1)");

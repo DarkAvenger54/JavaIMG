@@ -1,6 +1,10 @@
 package pl.edu.wsisiz.darkavenger54;
 
 /**
+ * Klasa pomocnicza do walidacji danych liczbowych wprowadzonych jako tekst.
+ * Umożliwia sprawdzenie, czy tekst można skonwertować na typ liczbowy
+ * oraz spełnia określone ograniczenia (zakres, wielkość jądra).
+ *
  * @author Yevhenii Manuilov
  */
 public class TextValidator

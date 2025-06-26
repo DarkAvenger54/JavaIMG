@@ -20,24 +20,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Klasa reprezentująca formularz obrazu w aplikacji JavaIMG.
+ * Odpowiada za wyświetlanie obrazu, zarządzanie jego wersjami,
+ * wywoływanie operacji przetwarzania obrazu poprzez dialogi.
+ *
  * @author Yevhenii Manuilov
  */
 
 public class ImageForm extends JFrame
 {
+    /** Ścieżka do pliku obrazu */
     private String imagePath;
+    /** Bieżąca wersja obrazu (Mat) */
     private Mat imageCurrentVersion;
+    /** Procentowy rozmiar wyświetlania obrazu */
     private int scalePercent = 100;
+    /** Stała kroku zmiany rozmiaru obrazu */
     private final int SCALE_STEP = 25;
+    /** Minimalny procent rozmiaru obrazu */
     private final int SCALE_MIN = 25;
+    /** Maksymalny procent rozmiaru obrazu */
     private final int SCALE_MAX = 400;
+    /** Typ obrazu (RGB, GRAYSCALE) */
     private EnImageType imageType;
+    /** Typ binarny obrazu (BINARY, NON_BINARY) */
     private EnBinaryType binaryType;
+    /** Okno wyświetlania histogramu obrazu */
     private HistogramForm histogramForm;
+    /** Powiązany główny formularz aplikacji */
     private final MainForm mainForm;
+    /** Identyfikator obrazu */
     private final int id;
+    /** Okno profilu linii obrazu */
     private ProfileLineForm profileLineForm;
 
+    /**
+     * Konstruktor. Tworzy nowy formularz obrazu.
+     *
+     * @param imagePath ścieżka do pliku obrazu
+     * @param mat       macierz obrazu
+     * @param mainForm  główny formularz aplikacji
+     * @param id        unikalny identyfikator obrazu
+     */
     public ImageForm(String imagePath, Mat mat, MainForm mainForm, int id)
     {
         //Initializing form fields
@@ -71,6 +95,12 @@ public class ImageForm extends JFrame
         //-----
         this.setVisible(true);
     }
+    /**
+     * Określa typ obrazu na podstawie liczby kanałów.
+     *
+     * @param mat obraz wejściowy
+     * @return typ obrazu (RGB lub GRAYSCALE)
+     */
     private EnImageType getMatType(Mat mat)
     {
         if (mat.channels() == 1)
@@ -82,6 +112,12 @@ public class ImageForm extends JFrame
             return EnImageType.RGB;
         }
     }
+    /**
+     * Określa typ binarny obrazu poprzez sprawdzenie minimalnej i maksymalnej wartości.
+     *
+     * @param mat obraz wejściowy
+     * @return typ binarny (BINARY albo NON_BINARY)
+     */
     private EnBinaryType getMatBinaryType(Mat mat) {
         if (mat.type() != CvType.CV_8UC1) {
             return EnBinaryType.NON_BINARY;
@@ -101,6 +137,11 @@ public class ImageForm extends JFrame
         }
         return EnBinaryType.NON_BINARY;
     }
+    /**
+     * Aktualizuje wyświetlany obraz w komponencie `imageLabel`.
+     *
+     * @param mat nowa wersja obrazu
+     */
     private void updateImage(Mat mat)
     {
         imageType = getMatType(mat);
@@ -119,6 +160,12 @@ public class ImageForm extends JFrame
         imageLabel.setIcon(new ImageIcon(updatedImage));
         this.repaint();
     }
+    /**
+     * Przeskalowuje obraz na podstawie ustawionego procentu skali.
+     *
+     * @param updatedImage obraz wejściowy
+     * @return przeskalowany obraz
+     */
     private Mat resizeFromOriginal(Mat updatedImage) {
         double scale = scalePercent / 100.0;
         Mat resized = new Mat();
@@ -130,21 +177,23 @@ public class ImageForm extends JFrame
         sizeLabel.setText(scalePercent + "%");
         return resized;
     }
-
+    /** Powiększa obraz poprzez zwiększenie skali o zadany krok. */
     private void increaseImageSize(ActionEvent e) {
         if (scalePercent + SCALE_STEP <= SCALE_MAX) {
             scalePercent += SCALE_STEP;
             updateImage(imageCurrentVersion);
         }
     }
-
+    /** Konwertuje obraz RGB na obraz w skali szarości. */
     private void decreaseImageSize(ActionEvent e) {
         if (scalePercent - SCALE_STEP >= SCALE_MIN) {
             scalePercent -= SCALE_STEP;
             updateImage(imageCurrentVersion);
         }
     }
-
+    /**
+     * Konwertuje obraz RGB na obraz w skali szarości.
+     */
     private void rgbToGray(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -156,7 +205,9 @@ public class ImageForm extends JFrame
             updateImage(imageCurrentVersion);
         }
     }
-
+    /**
+     * Konwertuje obraz w skali szarości na RGB.
+     */
     private void grayToRgb(ActionEvent e) {
         if (imageType == EnImageType.RGB)
         {
@@ -172,7 +223,9 @@ public class ImageForm extends JFrame
     private void testMenuItem(ActionEvent e) {
 
     }
-    //occurs errors when disk d is chosen, answer???
+    /**
+     * Zapisuje obraz do wybranego pliku.
+     */
     private void saveAs(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("choose");
@@ -184,7 +237,9 @@ public class ImageForm extends JFrame
             Imgcodecs.imwrite(file.getAbsolutePath(), imageCurrentVersion);
         }
     }
-
+    /**
+     * Duplikuje obraz poprzez utworzenie nowego formularza.
+     */
     private void duplicate(ActionEvent e) {
        mainForm.duplicateImageForm(this);
     }
@@ -193,7 +248,9 @@ public class ImageForm extends JFrame
     {
         mainForm.addImageForm(this);
     }
-
+    /**
+     * Wyświetla histogram obrazu, gdy jest w skali szarości.
+     */
     private void histogram(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -221,7 +278,9 @@ public class ImageForm extends JFrame
     {
         return imageCurrentVersion;
     }
-
+    /**
+     * Wykonuje rozciąganie histogramu (stretch).
+     */
     private void stretch(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -234,7 +293,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Wykonuje wyrównywanie histogramu (equalization).
+     */
     private void equalize(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -247,7 +308,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Konwertuje obraz RGB na kanały HSV.
+     */
     private void rgbToHsv(ActionEvent e) {
         if (imageType == EnImageType.RGB)
         {
@@ -263,7 +326,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Konwertuje obraz RGB na kanały Lab.
+     */
     private void rgbToLab(ActionEvent e) {
         if (imageType == EnImageType.RGB)
         {
@@ -278,7 +343,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't RGB", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Konwertuje obraz RGB na kanały RGB (poszczególne).
+     */
     private void rgbToRgb(ActionEvent e) {
         if (imageType == EnImageType.RGB)
         {
@@ -293,12 +360,16 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't RGB", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje negację obrazu.
+     */
     private void negation(ActionEvent e) {
         imageCurrentVersion = MatAlgorithms.negation(imageCurrentVersion);
         updateImage(imageCurrentVersion);
     }
-
+    /**
+     * Wykonuje rozciąganie intensywności w określonym zakresie.
+     */
     private void StertchInRange(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -319,7 +390,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje posterizację obrazu.
+     */
     private void posterize(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -337,7 +410,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje rozmycie obrazu (Blur).
+     */
     private void blur(ActionEvent e) {
         BlurDialog blurDialog = new BlurDialog(this);
         if (blurDialog.isConfirmed())
@@ -348,7 +423,9 @@ public class ImageForm extends JFrame
             updateImage(imageCurrentVersion);
         }
     }
-
+    /**
+     * Wykonuje operację Sobela.
+     */
     private void sobel(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -368,7 +445,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje operację Laplacian.
+     */
     private void laplacian(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -388,7 +467,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje detekcję krawędzi Canny.
+     */
     private void canny(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -407,7 +488,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje filtrację Prewitt.
+     */
     private void prewitt(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -427,7 +510,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje dodawanie dwóch obrazów.
+     */
     private void add(ActionEvent e) {
         ArithmeticDialog arithmeticDialog = new ArithmeticDialog(this, mainForm, "Add", "+");
         if(arithmeticDialog.isConfirmed())
@@ -445,7 +530,9 @@ public class ImageForm extends JFrame
             arithmeticDialog.dispose();
         }
     }
-
+    /**
+     * Wykonuje odejmowanie dwóch obrazów.
+     */
     private void substract(ActionEvent e) {
         ArithmeticDialog arithmeticDialog = new ArithmeticDialog(this, mainForm, "Subtract", "-");
         if(arithmeticDialog.isConfirmed())
@@ -464,6 +551,9 @@ public class ImageForm extends JFrame
         }
     }
 
+    /**
+     * Wykonuje mieszanie dwóch obrazów (blend).
+     */
     private void blend(ActionEvent e) {
         BlendDialog blendDialog = new BlendDialog(this, mainForm, "Blend", "blend");
         if(blendDialog.isConfirmed())
@@ -483,6 +573,9 @@ public class ImageForm extends JFrame
         }
     }
 
+    /**
+     * Wykonuje operację AND na dwóch obrazach.
+     */
     private void and(ActionEvent e) {
         ArithmeticDialog arithmeticDialog = new ArithmeticDialog(this, mainForm, "And", "and");
         if(arithmeticDialog.isConfirmed())
@@ -501,7 +594,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Wykonuje operację OR na dwóch obrazach.
+     */
     private void or(ActionEvent e) {
         ArithmeticDialog arithmeticDialog = new ArithmeticDialog(this, mainForm, "Or", "or");
         if(arithmeticDialog.isConfirmed())
@@ -520,7 +615,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Wykonuje operację XOR na dwóch obrazach.
+     */
     private void xor(ActionEvent e) {
         ArithmeticDialog arithmeticDialog = new ArithmeticDialog(this, mainForm, "Xor", "xor");
         if(arithmeticDialog.isConfirmed())
@@ -539,7 +636,9 @@ public class ImageForm extends JFrame
         }
 
     }
-
+    /**
+     * Wykonuje operację NOT (negację) na obrazie.
+     */
     private void not(ActionEvent e) {
         NotDialog notDialog = new NotDialog(this, mainForm, "Not", "not");
         if(notDialog.isConfirmed())
@@ -548,8 +647,9 @@ public class ImageForm extends JFrame
             mainForm.createNewImageForm("added", MatAlgorithms.bitwiseNot(mat));
         }
     }
-
-
+    /**
+     * Wykonuje rozmycie Gaussa na obrazie.
+     */
     private void gaussianBlur(ActionEvent e) {
         GaussianBlurDialog gaussianBlurDialog = new GaussianBlurDialog(this);
         if (gaussianBlurDialog.isConfirmed())
@@ -563,7 +663,9 @@ public class ImageForm extends JFrame
             updateImage(imageCurrentVersion);
         }
     }
-
+    /**
+     * Wykonuje wyostrzanie obrazu przy użyciu operatora Laplace'a.
+     */
     private void laplacianSharpen(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -583,7 +685,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje splot (konwolucję) obrazu poprzez zastosowanie maski.
+     */
     private void conlove(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -612,7 +716,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje filtrację medianową na obrazie.
+     */
     private void median(ActionEvent e) {
         if(imageType == EnImageType.GRAYSCALE)
         {
@@ -641,7 +747,10 @@ public class ImageForm extends JFrame
     {
         return imageCurrentVersion;
     }
-
+    /**
+     * Obsługuje zamknięcie okna poprzez usunięcie odpowiadającego mu
+     * obiektu z głównej formy i zamknięcie profilu linii (jeśli był otwarty).
+     */
     private void thisWindowClosed(WindowEvent e) {
         mainForm.removeImageFormByKey(id);
         if(profileLineForm != null)
@@ -650,6 +759,9 @@ public class ImageForm extends JFrame
         }
     }
 
+    /**
+     * Wykonuje operację erozji na obrazie.
+     */
     private void erosion(ActionEvent e) {
         MorfologyDialog morfologyDialog = new MorfologyDialog(this, "Erosion");
         if(binaryType == EnBinaryType.BINARY)
@@ -670,6 +782,9 @@ public class ImageForm extends JFrame
         }
     }
 
+    /**
+     * Wykonuje operację dylatacji na obrazie.
+     */
     private void dilation(ActionEvent e) {
         MorfologyDialog morfologyDialog = new MorfologyDialog(this, "Erosion");
         if(binaryType == EnBinaryType.BINARY)
@@ -690,6 +805,9 @@ public class ImageForm extends JFrame
         }
     }
 
+    /**
+     * Wykonuje operację otwarcia (opening) na obrazie.
+     */
     private void opening(ActionEvent e) {
         MorfologyDialog morfologyDialog = new MorfologyDialog(this, "Erosion");
         if(binaryType == EnBinaryType.BINARY)
@@ -709,7 +827,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Binary", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje operację zamknięcia (closing) na obrazie.
+     */
     private void closing(ActionEvent e) {
         MorfologyDialog morfologyDialog = new MorfologyDialog(this, "Erosion");
         if(binaryType == EnBinaryType.BINARY)
@@ -729,7 +849,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Binary", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje operację szkieletyzacji (skeletonization) na obrazie.
+     */
     private void skeletonization(ActionEvent e) {
         MorfologyDialog morfologyDialog = new MorfologyDialog(this, "Erosion");
         if(binaryType == EnBinaryType.BINARY)
@@ -749,7 +871,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Binary", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje progowanie manualne (manual threshold) na obrazie.
+     */
     private void manualThreshold(ActionEvent e) {
         if (imageType == EnImageType.GRAYSCALE)
         {
@@ -767,7 +891,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje progowanie adaptacyjne (adaptive threshold) na obrazie.
+     */
     private void adaptiveThreshold(ActionEvent e) {
         if(imageType == EnImageType.GRAYSCALE)
         {
@@ -779,7 +905,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje progowanie Otsu (otsu threshold) na obrazie.
+     */
     private void otsuThreshold(ActionEvent e) {
         if(imageType == EnImageType.GRAYSCALE)
         {
@@ -791,7 +919,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Tworzy profil intensywności wzdłuż wybranej linii na obrazie.
+     */
     private void profileLine(ActionEvent e) {
         if(imageType == EnImageType.GRAYSCALE)
         {
@@ -809,7 +939,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Wykonuje transformację Hougha na obrazie.
+     */
     private void hough(ActionEvent e) {
         if(imageType == EnImageType.GRAYSCALE)
         {
@@ -821,7 +953,9 @@ public class ImageForm extends JFrame
             JOptionPane.showMessageDialog(this, "Image isn't Grayscale", "Error" , JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    /**
+     * Tworzy piramidę obrazów poprzez zmianę rozmiaru.
+     */
     private void piramid(ActionEvent e) {
         ImageForm imageForm75 = mainForm.duplicateImageFormAndReturn(this);
         ImageForm imageForm50 = mainForm.duplicateImageFormAndReturn(this);
@@ -836,12 +970,16 @@ public class ImageForm extends JFrame
         imageForm150.setScalePercent(150);
         imageForm150.updateImage(imageForm150.getImageCurrentVersion());
     }
-
+    /**
+     * Ustawia procent skali wyświetlania obrazu.
+     */
     public void setScalePercent(int scalePercent)
     {
         this.scalePercent = scalePercent;
     }
-
+    /**
+     * Powoduje zamknięcie okna obrazu i usunięcie go z głównej formy.
+     */
     private void exit(ActionEvent e) {
         mainForm.removeImageFormByKey(id);
         if(profileLineForm != null)
@@ -850,7 +988,9 @@ public class ImageForm extends JFrame
         }
         this.dispose();
     }
-
+    /**
+     * Wykonuje operację znajdowania otoczki wypukłej (convex hull) na obrazie.
+     */
     private void convexHull(ActionEvent e) {
         if (binaryType == EnBinaryType.BINARY)
         {

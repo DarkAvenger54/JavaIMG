@@ -13,6 +13,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
+ * Klasa odpowiada za wyświetlanie i aktualizowanie histogramu dla obrazu w skali szarości.
+ * Tworzy zarówno tabelę danych, jak i wizualny wykres słupkowy.
+ *
  * @author Yevhenii Manuilov
  */
 
@@ -22,11 +25,16 @@ public class HistogramForm extends JFrame {
     DefaultCategoryDataset dataset;
     JFreeChart chart;
     ChartPanel chartPanel;
+    /**
+     * Konstruktor inicjalizujący i ustawiający wygląd formy histogramu.
+     *
+     * @param imagePath ścieżka do obrazu
+     */
     public HistogramForm(String imagePath) {
         initComponents();
         this.setTitle("JavaIMG "+imagePath+" Histogram");
 
-        //table
+        // Inicjalizacja tabeli
         model = new DefaultTableModel();
         model.addColumn("Brightness");
         model.addColumn("Count");
@@ -37,7 +45,7 @@ public class HistogramForm extends JFrame {
             table.getColumnModel().getColumn(i).setResizable(false);
         }
 
-        //histogram
+        // Inicjalizacja histogramu
         dataset = new DefaultCategoryDataset();
         chart = ChartFactory.createBarChart("Histogram", "Brightness", "Count", dataset);
         chartPanel = new ChartPanel(chart);
@@ -47,7 +55,11 @@ public class HistogramForm extends JFrame {
         this.revalidate();
         this.repaint();
     }
-
+    /**
+     * Aktualizuje dane histogramu na podstawie nowego obrazu.
+     *
+     * @param mat obraz w skali szarości
+     */
     public void updateHistogram(Mat mat)
     {
        data = MatAlgorithms.calculateGrayscaleHistogram(mat);

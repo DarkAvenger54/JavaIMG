@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"pl.edu.wsisiz.darkavenger54"},{"l":"pl.edu.wsisiz.darkavenger54.dialogs"},{"l":"pl.edu.wsisiz.darkavenger54.dialogs.arithmetic"},{"l":"pl.edu.wsisiz.darkavenger54.enums"},{"l":"pl.edu.wsisiz.darkavenger54.forms"}];updateSearchResults();

@@ -6,17 +6,40 @@ import pl.edu.wsisiz.darkavenger54.forms.MainForm;
 import java.io.*;
 
 /**
+ * Klasa główna uruchamiająca aplikację JavaIMG.
+ * Inicjalizuje bibliotekę OpenCV i uruchamia główne
+ * okno aplikacji (MainForm).
+ *
  * @author Yevhenii Manuilov
  */
 
 public class Main
 {
+    /**
+     * Punkt wejścia do aplikacji.
+     * Ładuje bibliotekę OpenCV i uruchamia główne
+     * okno aplikacji.
+     *
+     * @param args Argumenty linii poleceń (niewykorzystywane).
+     */
     public static void main(String[] args)
     {
         loadOpenCV();
         System.out.println("OpenCV Version: " + Core.VERSION);
         MainForm mainForm = new MainForm();
     }
+    /**
+     * Ładuje natywną bibliotekę OpenCV poprzez rozpakowanie
+     * jej z zasobów aplikacji (w zależności od architektury
+     * systemu) i zapisanie do pliku tymczasowego.
+     *
+     * Wybiera odpowiednią wersję pliku .dll/.so/.dylib
+     * na podstawie architektury procesora.
+     *
+     * @throws RuntimeException w przypadku błędu
+     *                           odczytu zasobów lub
+     *                           błędu ładowania biblioteki.
+     */
     private static void loadOpenCV() {
         try {
             String arch = System.getProperty("os.arch");

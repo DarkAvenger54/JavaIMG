@@ -8,13 +8,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Główna klasa aplikacji JavaIMG.
+ * Odpowiada za główne okno oraz zarządzanie otwieraniem obrazów i formularzami obrazów.
+ *
  * @author Yevhenii Manuilov
  */
 
 public class MainForm extends JFrame
 {
+    /** Mapa przechowująca formularze obrazów z przypisanym identyfikatorem */
     private Map<Integer, ImageForm> imageForms;
+    /** Licznik identyfikatorów obrazów */
     private int imageIdCounter = 0;
+    /**
+     * Konstruktor klasy MainForm.
+     * Tworzy główne okno aplikacji i ustawia menu.
+     */
     public MainForm()
     {
         imageForms = new HashMap<>();
@@ -58,6 +67,9 @@ public class MainForm extends JFrame
 
         setVisible(true);
     }
+    /**
+     * Otwiera okno wyboru pliku i ładuje obraz w kolorze (RGB).
+     */
     private void chooseImageRGB() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Choose Image");
@@ -84,6 +96,9 @@ public class MainForm extends JFrame
         }
     }
 
+    /**
+     * Otwiera okno wyboru pliku i ładuje obraz w odcieniach szarości.
+     */
     private void chooseImageGray()
     {
         JFileChooser fileChooser = new JFileChooser();
@@ -110,39 +125,79 @@ public class MainForm extends JFrame
             }
         }
     }
+    /**
+     * Wyświetla okno dialogowe z informacjami o aplikacji.
+     */
     private void showInformation()
     {
         JOptionPane.showMessageDialog(this, "JavaIMG\nMade by Yevhenii Manuilov\nPresenter: Dr. Eng. Łukasz Roszkowiak\n" +
                 "Image Processing Algorithms 2025\nWIT ID: 21679");
     }
+    /**
+     * Duplikuje formularz obrazu i dodaje go do mapy.
+     *
+     * @param imageForm formularz obrazu do duplikacji
+     */
     public void duplicateImageForm(ImageForm imageForm)
     {
         ++imageIdCounter;
         imageForms.put(imageIdCounter, new ImageForm(imageForm.getImagePath()+"(1)", imageForm.getImageMat(), this, imageIdCounter));
     }
+    /**
+     * Dodaje nowy formularz obrazu do mapy.
+     *
+     * @param imageForm formularz obrazu do dodania
+     */
     public void addImageForm(ImageForm imageForm)
     {
         ++imageIdCounter;
         imageForms.put(imageIdCounter, imageForm);
     }
+    /**
+     * Tworzy nowy formularz obrazu na podstawie ścieżki i macierzy obrazu.
+     *
+     * @param imagePath ścieżka do obrazu
+     * @param mat macierz obrazu
+     */
     public void createNewImageForm(String imagePath, Mat mat)
     {
         ++imageIdCounter;
         imageForms.put(imageIdCounter, new ImageForm(imagePath, mat, this, imageIdCounter));
     }
-
+    /**
+     * Zwraca mapę formularzy obrazów.
+     *
+     * @return mapa formularzy obrazów
+     */
     public Map<Integer, ImageForm> getImageForms()
     {
         return imageForms;
     }
+    /**
+     * Zwraca formularz obrazu na podstawie klucza.
+     *
+     * @param key identyfikator formularza
+     * @return formularz obrazu
+     */
     public ImageForm getImageFormByKey(Integer key)
     {
         return imageForms.get(key);
     }
+    /**
+     * Usuwa formularz obrazu na podstawie klucza.
+     *
+     * @param key identyfikator formularza
+     */
     public void removeImageFormByKey(Integer key)
     {
         imageForms.remove(key);
     }
+    /**
+     * Duplikuje formularz obrazu i zwraca nowy formularz.
+     *
+     * @param originalForm formularz do duplikacji
+     * @return nowy duplikat formularza obrazu
+     */
     public ImageForm duplicateImageFormAndReturn(ImageForm originalForm) {
         ++imageIdCounter;
         Mat clonedMat = originalForm.getImageMat().clone();

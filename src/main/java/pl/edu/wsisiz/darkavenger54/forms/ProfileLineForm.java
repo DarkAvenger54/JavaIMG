@@ -22,6 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Klasa odpowiedzialna za wyświetlanie profilu jasności pikseli pomiędzy
+ * dwoma wybranymi punktami na obrazie w skali szarości.
+ *
+ * Tworzy tabelę danych (współrzędne X, Y i jasność) oraz
+ * wizualizację wykresu profilu.
+ *
  * @author Yevhenii Manuilov
  */
 public class ProfileLineForm extends JFrame {
@@ -35,7 +41,13 @@ public class ProfileLineForm extends JFrame {
     private org.opencv.core.Point p1;
     private org.opencv.core.Point p2;
 
-
+    /**
+     * Konstruktor inicjalizujący i ustawiający wygląd oraz dane profilu jasności.
+     *
+     * @param mat obraz typu Mat
+     * @param p1  punkt początkowy profilu
+     * @param p2  punkt końcowy profilu
+     */
     public ProfileLineForm(Mat mat, org.opencv.core.Point p1, org.opencv.core.Point p2)
     {
         initComponents();
@@ -43,7 +55,7 @@ public class ProfileLineForm extends JFrame {
         this.mat = mat;
         this.p1 = p1;
         this.p2 = p2;
-        //table
+        // Inicjalizujemy tabelę
         model = new DefaultTableModel();
         model.addColumn("X");
         model.addColumn("Y");
@@ -54,7 +66,7 @@ public class ProfileLineForm extends JFrame {
         {
             table.getColumnModel().getColumn(i).setResizable(false);
         }
-        //chart
+        // Inicjalizujemy wykres
         series = new XYSeries("");
         dataset = new XYSeriesCollection();
         dataset.addSeries(series);
@@ -66,6 +78,10 @@ public class ProfileLineForm extends JFrame {
         setTitle("Profile Line");
         this.setVisible(true);
     }
+    /**
+     * Inicjalizuje dane profilu jasności poprzez
+     * wyznaczenie jasności pikseli pomiędzy punktami p1 i p2.
+     */
     private void initProfileLine()
     {
         data = MatAlgorithms.getProfileLine(mat, p1, p2);
