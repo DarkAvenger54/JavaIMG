@@ -1037,7 +1037,6 @@ public class MatAlgorithms
             Point pt2 = new Point(line[2], line[3]);
             Imgproc.line(result, pt1, pt2, new Scalar(0, 0, 255), 2);
         }
-
         return result;
     }
     /**
@@ -1046,28 +1045,37 @@ public class MatAlgorithms
      * @param binary obraz wejściowy (binarne CV_8UC1)
      * @return obraz z wypełnioną otoczką wypukłą
      */
+    
     public static Mat convexHull(Mat binary) {
+        // Lista do przechowywania znalezionych konturów
         List<MatOfPoint> contours = new ArrayList<>();
+        // Macierz hierarchii konturów
         Mat hierarchy = new Mat();
+        // Znajdujemy zewnętrzne kontury na obrazie binarnym
         Imgproc.findContours(binary, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
+        // Tworzymy nowe czarne zdjęcie o takich samych wymiarach
         Mat result = Mat.zeros(binary.size(), CvType.CV_8UC1);
-
+        // Dla każdego znalezionego konturu
         for (MatOfPoint contour : contours) {
             MatOfInt hull = new MatOfInt();
+            // Wyznaczamy otoczkę wypukłą dla danego konturu
             Imgproc.convexHull(contour, hull);
-
+            // Zamieniamy kontur na tablicę punktów
             Point[] contourArray = contour.toArray();
+            // Lista do przechowywania punktów należących do otoczki wypukłej
             List<Point> hullPoints = new ArrayList<>();
             for (int index : hull.toArray()) {
+                // Dodajemy do listy punkt odpowiadający danemu indeksowi z hull
                 hullPoints.add(contourArray[index]);
             }
-
+            // Tworzymy obiekt MatOfPoint z punktów otoczki wypukłej
             MatOfPoint hullMat = new MatOfPoint();
             hullMat.fromList(hullPoints);
+            // Tworzymy listę konturów do narysowania 
             List<MatOfPoint> hullList = new ArrayList<>();
             hullList.add(hullMat);
-            Imgproc.drawContours(result, hullList, -1, new Scalar(255), -1);  // заливка оболочки
+            // Rysujemy otoczkę wypukłą na obrazie wynikowym, białym kolorem 
+            Imgproc.drawContours(result, hullList, -1, new Scalar(255), -1);
         }
         return result;
     }
@@ -1099,7 +1107,7 @@ public class MatAlgorithms
 
         while (true) {
             if (x0 >= 0 && y0 >= 0 && x0 < mat.cols() && y0 < mat.rows()) {
-                double[] pixel = mat.get(y0, x0); // OpenCV uses row (y), then col (x)
+                double[] pixel = mat.get(y0, x0);
                 int luminocity = (int) pixel[0];
                 profile.add(new int[] { x0, y0, luminocity });
             }
